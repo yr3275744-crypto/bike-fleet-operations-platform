@@ -35,5 +35,8 @@ namespace IngestionService.Models
 
         [JsonPropertyName("num_bikes_disabled")]
         public int NumBikesDisabled { get; set; }
+
+        [JsonPropertyName("vehicle_types_available")]
+        public List<VehicleTypeAvailable> VehicleTypesAvailable { get; set; } = new();
     }
 }

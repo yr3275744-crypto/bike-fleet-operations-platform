@@ -34,26 +34,18 @@ namespace IngestionService.services
         }
         public async Task Play()
         {
-            //StationInformationService stationInformationService = _serviceProvider.GetRequiredService<StationInformationService>();
-            //StationStatusService stationStatusService = _serviceProvider.GetRequiredService<StationStatusService>();
-            //VehicleTypesService vehicleTypesService = _serviceProvider.GetRequiredService<VehicleTypesService>();
-            //ProducerService producerService = _serviceProvider.GetRequiredService<ProducerService>();
-            //ConfigStrings strings = _serviceProvider.GetRequiredService<ConfigStrings>();
-
-
             try
             {
-                //StationInformationResponse informationResponse = await _stationInformationService.GetStationInformationAsync();
-                //StationStatusResponse statusResponse = await _stationStatusService.GetStationStatusAsync();
-                //VehicleTypesResponse vehicleTypesReponse = await _vehicleTypesService.GetVehicleTypesAsync();
-
                 var stationStatusTimer = new PeriodicTimer(TimeSpan.FromMinutes(60));
                 var stationInformationTimer = new PeriodicTimer(TimeSpan.FromMinutes(60));
                 var vehicleTypesTimer = new PeriodicTimer(TimeSpan.FromSeconds(60));
 
-                await _producerService.SendInformations();
-                await _producerService.SendStatuses();
-                await _producerService.SendVehicleTypes();
+                await Task.WhenAll(_producerService.SendInformations(),
+                    _producerService.SendStatuses(),
+                    _producerService.SendVehicleTypes());
+                //await _producerService.SendInformations();
+                //await _producerService.SendStatuses();
+                //await _producerService.SendVehicleTypes();
 
                 Task<bool> statusTask = stationStatusTimer.WaitForNextTickAsync().AsTask();
                 Task<bool> informationTask = stationInformationTimer.WaitForNextTickAsync().AsTask();
