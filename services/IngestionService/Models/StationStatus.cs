@@ -13,13 +13,13 @@ namespace IngestionService.Models
         public string StationId { get; set; } = string.Empty;
 
         [JsonPropertyName("is_installed")]
-        public bool IsInstalled { get; set; }
+        public int IsInstalled { get; set; }
 
         [JsonPropertyName("is_renting")]
-        public bool IsRenting { get; set; }
+        public int IsRenting { get; set; }
 
         [JsonPropertyName("is_returning")]
-        public bool IsReturning { get; set; }
+        public int IsReturning { get; set; }
 
         [JsonPropertyName("last_reported")]
         public long LastReported { get; set; }

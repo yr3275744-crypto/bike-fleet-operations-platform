@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IngestionService.Models
 {
-    public class configStrings
+    public class ConfigStrings
     {
         public string BootstrapServers { get; set; } = string.Empty;
         public string StationInformationTopic { get; set; } = string.Empty;
