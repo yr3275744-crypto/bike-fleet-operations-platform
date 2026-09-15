@@ -39,18 +39,57 @@ namespace IngestionService.services
             //VehicleTypesService vehicleTypesService = _serviceProvider.GetRequiredService<VehicleTypesService>();
             //ProducerService producerService = _serviceProvider.GetRequiredService<ProducerService>();
             //ConfigStrings strings = _serviceProvider.GetRequiredService<ConfigStrings>();
-            
 
-            StationInformationResponse informationResponse = await _stationInformationService.GetStationInformationAsync();
-            StationStatusResponse statusResponse = await _stationStatusService.GetStationStatusAsync();
-            VehicleTypesResponse vehicleTypesReponse = await _vehicleTypesService.GetVehicleTypesAsync();
 
-            await _producerService.SendInformations();
-            await _producerService.SendStatuses();
-            await _producerService.SendVehicleTypes();
+            try
+            {
+                //StationInformationResponse informationResponse = await _stationInformationService.GetStationInformationAsync();
+                //StationStatusResponse statusResponse = await _stationStatusService.GetStationStatusAsync();
+                //VehicleTypesResponse vehicleTypesReponse = await _vehicleTypesService.GetVehicleTypesAsync();
 
-            _producerService.Producer.Flush();
-            _producerService.Producer.Dispose();
+                var stationStatusTimer = new PeriodicTimer(TimeSpan.FromMinutes(60));
+                var stationInformationTimer = new PeriodicTimer(TimeSpan.FromMinutes(60));
+                var vehicleTypesTimer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+
+                await _producerService.SendInformations();
+                await _producerService.SendStatuses();
+                await _producerService.SendVehicleTypes();
+
+                Task<bool> statusTask = stationStatusTimer.WaitForNextTickAsync().AsTask();
+                Task<bool> informationTask = stationInformationTimer.WaitForNextTickAsync().AsTask();
+                Task<bool> vehicleTypesTask = vehicleTypesTimer.WaitForNextTickAsync().AsTask();
+
+                while (true)
+                {
+                    Task<bool> completedTask = await Task.WhenAny(
+                        statusTask,
+                        informationTask,
+                        vehicleTypesTask);
+                    if (completedTask == statusTask)
+                    {
+                        await _producerService.SendStatuses();
+                        statusTask = stationStatusTimer.WaitForNextTickAsync().AsTask();
+                    }
+                    if (completedTask == informationTask)
+                    {
+                        await _producerService.SendInformations();
+
+                        informationTask = stationInformationTimer.WaitForNextTickAsync().AsTask();
+                    }
+
+                    if (completedTask == vehicleTypesTask)
+                    {
+                        await _producerService.SendVehicleTypes();
+
+                        vehicleTypesTask = vehicleTypesTimer.WaitForNextTickAsync().AsTask();
+                    }
+                }
+            }
+            finally
+            {
+                _producerService.Producer.Flush();
+                _producerService.Producer.Dispose();
+            }
         }
     }
 }
