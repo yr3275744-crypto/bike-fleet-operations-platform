@@ -57,7 +57,7 @@ namespace ProcessingService.Migrations
 
                     b.HasKey("StationId");
 
-                    b.ToTable("StationInformation");
+                    b.ToTable("StationInformations");
                 });
 
             modelBuilder.Entity("ProcessingService.Models.VehicleType", b =>
@@ -82,7 +82,7 @@ namespace ProcessingService.Migrations
 
                     b.HasKey("VehicleTypeId");
 
-                    b.ToTable("VehicleType");
+                    b.ToTable("VehicleTypes");
                 });
 #pragma warning restore 612, 618
         }

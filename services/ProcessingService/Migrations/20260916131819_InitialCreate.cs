@@ -14,7 +14,7 @@ namespace ProcessingService.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "StationInformation",
+                name: "StationInformations",
                 columns: table => new
                 {
                     StationId = table.Column<string>(type: "varchar(255)", nullable: false)
@@ -31,12 +31,12 @@ namespace ProcessingService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StationInformation", x => x.StationId);
+                    table.PrimaryKey("PK_StationInformations", x => x.StationId);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "VehicleType",
+                name: "VehicleTypes",
                 columns: table => new
                 {
                     VehicleTypeId = table.Column<string>(type: "varchar(255)", nullable: false)
@@ -49,7 +49,7 @@ namespace ProcessingService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleType", x => x.VehicleTypeId);
+                    table.PrimaryKey("PK_VehicleTypes", x => x.VehicleTypeId);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
         }
@@ -58,10 +58,10 @@ namespace ProcessingService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StationInformation");
+                name: "StationInformations");
 
             migrationBuilder.DropTable(
-                name: "VehicleType");
+                name: "VehicleTypes");
         }
     }
 }

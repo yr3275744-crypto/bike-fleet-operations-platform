@@ -17,8 +17,10 @@ namespace ProcessingService.Servicese
                 .GetDatabase(configStrings.MongoDbName)
                 .GetCollection<StationStatusMongoDto>(configStrings.MongoCollectionName);
         }
-            public async Task<List<StationStatusMongoDto>> GetAsync() =>
-        await _collection.Find(_ => true).ToListAsync();
+        public async Task CreateAsync(StationStatusMongoDto stationStatus)
+        {
+            await _collection.InsertOneAsync(stationStatus);
+        }
     }
 
 }

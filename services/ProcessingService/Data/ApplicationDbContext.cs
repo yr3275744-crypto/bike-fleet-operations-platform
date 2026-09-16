@@ -14,6 +14,8 @@ namespace ProcessingService.Data
             : base(options)
         {
         }
+        public DbSet<StationInformation> StationInformations { get; set; }
+        public DbSet<VehicleType> VehicleTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

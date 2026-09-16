@@ -12,7 +12,7 @@ using ProcessingService.Data;
 namespace ProcessingService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260916085607_InitialCreate")]
+    [Migration("20260916131819_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,7 +60,7 @@ namespace ProcessingService.Migrations
 
                     b.HasKey("StationId");
 
-                    b.ToTable("StationInformation");
+                    b.ToTable("StationInformations");
                 });
 
             modelBuilder.Entity("ProcessingService.Models.VehicleType", b =>
@@ -85,7 +85,7 @@ namespace ProcessingService.Migrations
 
                     b.HasKey("VehicleTypeId");
 
-                    b.ToTable("VehicleType");
+                    b.ToTable("VehicleTypes");
                 });
 #pragma warning restore 612, 618
         }
