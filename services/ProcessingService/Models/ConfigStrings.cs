@@ -20,5 +20,6 @@ namespace ProcessingService.Models
         public string MongoConnectionString { get; set; } = string.Empty;
         public string MongoDbName { get; set; } = string.Empty;
         public string MongoCollectionName { get; set; } = string.Empty;
+        public string RedisConnectionString { get; set; } = string.Empty;
     }
 }

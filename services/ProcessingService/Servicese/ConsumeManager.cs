@@ -89,7 +89,7 @@ namespace ProcessingService.Servicese
                             _logger.LogError("invalid station status message");
                             continue;
                         }
-                        await _stationStatusHandler.CreateAsync(status);
+                        await _stationStatusHandler.CreateManagmentAsync(status);
                         _logger.LogInformation("station status send");
                     }
                     else if (consumeResult.Topic == _configStrings.VehicleTypesTopic)

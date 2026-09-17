@@ -28,7 +28,8 @@ namespace ProcessingService
                 MySqlConnectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING")!,
                 MongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")!,
                 MongoCollectionName = Environment.GetEnvironmentVariable("MONGO_COLLECTION_NAME")!,
-                MongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_NAME")!
+                MongoDbName = Environment.GetEnvironmentVariable("MONGO_DB_NAME")!,
+                RedisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING")!
             });
             var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING")
                 ?? throw new InvalidOperationException("Connection string"
