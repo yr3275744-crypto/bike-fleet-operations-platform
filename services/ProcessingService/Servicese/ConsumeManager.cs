@@ -58,56 +58,65 @@ namespace ProcessingService.Servicese
             {
                 while (true)
                 {
-                    var consumeResult = _consumer.Consume(cts.Token);
-                    if (consumeResult == null || consumeResult.Message.Value == null)
+                    try
                     {
-                        _logger.LogError("consume faild");
-                        continue;
-                    }
-                    if (consumeResult.Topic == _configStrings.StationInformationTopic)
-                    {
-                        StationInformation? information = JsonSerializer
-                            .Deserialize<StationInformation>(consumeResult.Message.Value);
-                        if (information == null)
+                        var consumeResult = _consumer.Consume(cts.Token);
+                        if (consumeResult == null || consumeResult.Message.Value == null)
                         {
-                            _logger.LogError("invalid station information message");
+                            _logger.LogError("consume faild");
                             continue;
                         }
-                        bool isCreated = await _stationInformationHandler.CreateAsync(information);
-                        if (!isCreated)
+                        if (consumeResult.Topic == _configStrings.StationInformationTopic)
                         {
-                            await _stationInformationHandler.UpdateAsync(information);
+                            StationInformation? information = JsonSerializer
+                                .Deserialize<StationInformation>(consumeResult.Message.Value);
+                            if (information == null)
+                            {
+                                _logger.LogError("invalid station information message");
+                                continue;
+                            }
+                            bool isCreated = await _stationInformationHandler.CreateAsync(information);
+                            if (!isCreated)
+                            {
+                                await _stationInformationHandler.UpdateAsync(information);
+                            }
+                            _logger.LogInformation("station information send");
                         }
-                        _logger.LogInformation("station information send");
-                    }
-                    else if (consumeResult.Topic == _configStrings.StationStatusTopic)
-                    {
-                        StationStatusMongoDto? status = JsonSerializer
-                            .Deserialize<StationStatusMongoDto>(consumeResult.Message.Value);
-                        if (status == null)
+                        else if (consumeResult.Topic == _configStrings.StationStatusTopic)
                         {
-                            _logger.LogError("invalid station status message");
-                            continue;
+                            StationStatusMongoDto? status = JsonSerializer
+                                .Deserialize<StationStatusMongoDto>(consumeResult.Message.Value);
+                            if (status == null)
+                            {
+                                _logger.LogError("invalid station status message");
+                                continue;
+                            }
+                            await _stationStatusHandler.CreateManagmentAsync(status);
+                            _logger.LogInformation("station status send");
                         }
-                        await _stationStatusHandler.CreateManagmentAsync(status);
-                        _logger.LogInformation("station status send");
-                    }
-                    else if (consumeResult.Topic == _configStrings.VehicleTypesTopic)
-                    {
-                        VehicleType? vehicleType = JsonSerializer
-                            .Deserialize<VehicleType>(consumeResult.Message.Value);
-                        if (vehicleType == null)
+                        else if (consumeResult.Topic == _configStrings.VehicleTypesTopic)
                         {
-                            _logger.LogError("invalid vehicle type message");
-                            continue;
-                        }
+                            VehicleType? vehicleType = JsonSerializer
+                                .Deserialize<VehicleType>(consumeResult.Message.Value);
+                            if (vehicleType == null)
+                            {
+                                _logger.LogError("invalid vehicle type message");
+                                continue;
+                            }
 
-                        var isCreated = await _vehicleTypesHandler.CreateAsync(vehicleType);
-                        if (!isCreated)
-                        {
-                            await _vehicleTypesHandler.UpdateAsync(vehicleType);
+                            var isCreated = await _vehicleTypesHandler.CreateAsync(vehicleType);
+                            if (!isCreated)
+                            {
+                                await _vehicleTypesHandler.UpdateAsync(vehicleType);
+                            }
+                            _logger.LogInformation("vehicle type send");
                         }
-                        _logger.LogInformation("vehicle type send");
+                    }
+                    catch (ConsumeException ex) when (ex.Error.Code == ErrorCode.UnknownTopicOrPart)
+                    {
+                        _logger.LogError("faild to consume: {ex}", ex);
+                        await Task.Delay(3000);
+                        continue;
                     }
                 }
             }
