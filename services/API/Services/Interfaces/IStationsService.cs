@@ -4,6 +4,6 @@ namespace API.Services.Interfaces
 {
     public interface IStationsService
     {
-        Task<IEnumerable<GetStationsResponseDto>> GetStations();
+        Task<IEnumerable<GetStationsResponseDto>> GetStations(bool? isRenting);
     }
 }

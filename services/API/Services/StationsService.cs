@@ -24,13 +24,13 @@ namespace API.Services
                 .GetDatabase(configStrings.MongoDbName)
                 .GetCollection<StationStatusMongoDto>(configStrings.MongoCollectionName);
         }
-        public async Task<IEnumerable<GetStationsResponseDto>> GetStations()
+        public async Task<IEnumerable<GetStationsResponseDto>> GetStations(bool? isRenting)
         {
             List<GetStationsResponseDto> dtos = new();
             var info = await _dbContext.StationInformations.ToListAsync();
             foreach (StationInformation station in info)
             {
-                string? statusString = _redisDb.StringGet(station.StationId);
+                string? statusString = await _redisDb.StringGetAsync(station.StationId);
                 if (string.IsNullOrEmpty(statusString))
                 {
                     Console.WriteLine("status of station not found");
@@ -55,7 +55,12 @@ namespace API.Services
                     NumDocksAvailable = status.NumDocksAvailable
                 });
             }
-            return dtos;
+            var query = dtos.AsQueryable();
+            if (isRenting != null)
+            {
+                query = query.Where(s => Convert.ToBoolean(s.IsRenting) == isRenting);
+            }
+            return query;
         }
 
     }
