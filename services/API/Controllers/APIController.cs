@@ -1,4 +1,5 @@
-﻿using API.Services.Interfaces;
+﻿using API.Models;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -12,5 +13,12 @@ namespace API.Controllers
         {
             _stationsService = stationsService;
         }
+        [HttpGet("stations")]
+        public async Task<ActionResult<IEnumerable<GetStationsResponseDto>>> GetStations()
+        {
+            var result = await _stationsService.GetStations();
+            return Ok(result);
+        }
+
     }
 }
