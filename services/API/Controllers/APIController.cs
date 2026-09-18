@@ -7,13 +7,10 @@ namespace API.Controllers
     [Route("/api")]
     public class APIController : ControllerBase
     {
-        private readonly IStationInformationService _informationService;
-        private readonly IStationStatusService _statusService;
-        public APIController(IStationInformationService informationService,
-            IStationStatusService statusService)
+        private readonly IStationsService _stationsService;
+        public APIController(IStationsService stationsService)
         {
-            _informationService = informationService;
-            _statusService = statusService;
+            _stationsService = stationsService;
         }
     }
 }
