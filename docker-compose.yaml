@@ -8,10 +8,10 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -76,6 +76,25 @@ services:
         condition: service_started
       broker:
         condition: service_started
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+  api:
+    build: ./services/API
+    ports:
+      - "8080:8080"
+      # - "8081:8081"
+    container_name: bike-flight-api
+    environment:
+      MYSQL_CONNECTION_STRING: Server=mysql;Port=3306;Uid=root;Pwd=root;Database=bike-flight;
+      MONGO_CONNECTION_STRING: mongodb://mongo:27017
+      MONGO_DB_NAME: bike-flight
+      MONGO_COLLECTION_NAME: vehicle_type_collection
+      REDIS_CONNECTION_STRING: redis:6379
+    depends_on:
       redis:
         condition: service_healthy
       mongo:

@@ -3,6 +3,7 @@ using API.Models;
 using API.Services;
 using API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(o => o
 builder.Services.AddScoped<IStationsService, StationsService>();
 
 var app = builder.Build();
+
+// enshure db exists
+using (var scope = app.Services.CreateScope())
+{
+    int retries = 0;
+    while (retries < 10)
+    {
+        try
+        {
+            scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+            break;
+        }
+        catch (MySqlException)
+        {
+            retries++;
+            await Task.Delay(3000);
+        }
+    }
+
+}
 
 // Configure the HTTP request pipeline.
 
