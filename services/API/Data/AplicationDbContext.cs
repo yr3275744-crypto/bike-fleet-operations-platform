@@ -10,9 +10,13 @@ namespace API.Data
         {
         }
         public DbSet<StationInformation> StationInformations { get; set; }
+        public DbSet<VehicleType> VehicleTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<VehicleType>()
+                .HasKey(v => v.VehicleTypeId);
             modelBuilder.Entity<StationInformation>()
                 .HasKey(s => s.StationId);
         }

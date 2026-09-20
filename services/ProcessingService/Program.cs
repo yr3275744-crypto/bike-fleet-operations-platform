@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MySqlConnector;
 using MySqlConnector.Logging;
 using ProcessingService.Data;
 using ProcessingService.Models;
@@ -53,7 +54,20 @@ namespace ProcessingService
             //var scope = serviceProvider.CreateScope();
             using (var scope = serviceProvider.CreateScope())
             {
-                serviceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
+                int retries = 0;
+                while (retries < 10)
+                {
+                    try
+                    {
+                        serviceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
+                        break;
+                    }
+                    catch (MySqlException)
+                    {
+                        retries++;
+                        await Task.Delay(3000);
+                    }
+                }
             }
 
            await serviceProvider.GetRequiredService<ConsumeManager>().ConsumeLoop();
